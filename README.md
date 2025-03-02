@@ -7,7 +7,7 @@ This repository contains tutorial exercises and solutions for the **Client-Serve
 - **Week1_CSA_TUT** - Introduction to client-server architecture, basic socket communication.
 - **Week2_CSA_TUT** - Multi-threaded server implementation handling multiple clients.
 - **Week3_CSA_TUT_Q1** - TCP socket programming with message exchange between client and server.
-- **Week3_CSA_TUT_Q2** - Enhancements to the client-server communication mechanism.
+- **Week3(4)_CSA_TUT_Q2** - Enhancements to the client-server communication mechanism.
 
 ## Features
 - Implementation of **TCP sockets** in Java.

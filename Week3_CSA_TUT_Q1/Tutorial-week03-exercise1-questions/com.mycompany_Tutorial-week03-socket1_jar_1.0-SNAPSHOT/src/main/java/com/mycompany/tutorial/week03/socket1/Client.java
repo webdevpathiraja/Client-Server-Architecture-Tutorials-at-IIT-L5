@@ -25,8 +25,14 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.channels.IllegalBlockingModeException;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /* **Define a public class named Client. This class will contain all the logic for our client program.** */
 public class Client {
+    
+    /* **Initialize a Logger for logging messages** */
+    private static final Logger logger = Logger.getLogger(Client.class.getName());
 
     /* **Define the main method. This is the entry point for any Java application.** */
     public static void main(String[] args) {
@@ -42,23 +48,33 @@ public class Client {
         /* **Try to establish a socket connection to the server. 
          * The Socket class constructor takes two parameters: the server address and the server port. The try-with-resources statement ensures that the socket is closed when it is no longer needed.** */
         try (Socket socket = new Socket(localhost, serverPort)) {
+            logger.info("[CLIENT] Connecting to the server at " + localhost + ":" + serverPort);
 
             /* **Create a PrintWriter object for sending messages to the server. 
              * The PrintWriter class constructor takes two parameters: the socket output stream and 
              * a boolean indicating whether to automatically flush the output stream after every write operation.** */
+            logger.info("Initializing output stream to send messages...");
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            logger.info("Output stream initialized successfully");
 
             /* **Create a BufferedReader object for reading server responses. 
              * The BufferedReader class constructor takes an InputStreamReader, which in turn takes the socket input stream.** */
+            logger.info("Initializing input stream to receive messages...");
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            logger.info("Input stream initialized successfully.");
 
             /* **Send a message to the server. The PrintWriter's println method is used here, 
              * which sends a string followed by a newline to the server.** */
-            out.println("[CLIENT]Hello to Server from Client!");
+            String clientMessage = "[CLIENT]Hello to Server from Client!";
+            logger.info("Sending message to server: " + clientMessage);
+            out.println(clientMessage);
+            logger.info("Message sent successfully.");
 
             /* **Read the server response and store it in a string variable. 
              * The BufferedReader's readLine method is used here, which reads a line of text from the server.** */
+            logger.info("Waiting for server response...");
             String serverResponse = in.readLine();
+            logger.info("Received server response: " + serverResponse);
 
             /* **Print the server response to the console. The System.out.println method is used here, 
              * which prints a string followed by a newline to the console.** */
@@ -66,15 +82,15 @@ public class Client {
 
         /* **Catch specific exceptions that may occur and print the stack trace.** */
         } catch (SocketException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SocketException occurred!", e);
         } catch (SocketTimeoutException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SocketTimeoutException occurred!", e);
         } catch (IllegalBlockingModeException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "IllegalBlockingModeException occurred!", e);
         } catch (SecurityException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SecurityException occurred!", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "IOException occurred!", e);
         }
     }
 }

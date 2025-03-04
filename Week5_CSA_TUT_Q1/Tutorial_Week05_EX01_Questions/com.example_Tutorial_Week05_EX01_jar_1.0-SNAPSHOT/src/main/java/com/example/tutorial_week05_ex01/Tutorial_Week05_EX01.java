@@ -172,35 +172,26 @@ public class Tutorial_Week05_EX01 {
      * found" cases with appropriate 400 and 404 responses.
      */
     private static void handleGetMovieById(HttpExchange exchange) throws IOException {
-    String path = exchange.getRequestURI().getPath();
-
-    // Validate path before extracting ID
-    if (!path.matches("^/movies/\\d+$")) { // Ensures format is "/movies/{id}"
-        sendResponse(exchange, 400, "Invalid Movie ID Format"); // 400 Bad Request
-        return;
-    }
-
-    String idStr = path.substring(path.lastIndexOf('/') + 1);
-    int id;
-    try {
-        id = Integer.parseInt(idStr);
-    } catch (NumberFormatException e) {
-        sendResponse(exchange, 400, "Invalid Movie ID"); // 400 Bad Request
-        return;
-    }
-
-    // Search for the movie
-    for (Map<String, Object> movie : movies) {
-        if ((int) movie.get("id") == id) {
-            JSONObject jsonMovie = new JSONObject(movie);
-            sendResponse(exchange, 200, jsonMovie.toString());
+        String path = exchange.getRequestURI().getPath();
+        String idStr = path.substring(path.lastIndexOf('/') + 1);
+        int id;
+        try {
+            id = Integer.parseInt(idStr);
+        } catch (NumberFormatException e) {
+            sendResponse(exchange, 400, "Invalid Movie ID"); // 400 Bad Request
             return;
         }
+
+        for (Map<String, Object> movie: movies) {
+            if ((int) movie.get("id") == id) {
+                JSONObject jsonMovie = new JSONObject(movie);
+                sendResponse(exchange, 200, jsonMovie.toString());
+                return;
+            }
+        }
+
+        sendResponse(exchange, 404, "Movie Not Found"); // 404 Not Found
     }
-
-    sendResponse(exchange, 404, "Movie Not Found"); // 404 Not Found
-}
-
 
     /*
      * Please create a method handlePostMovie(exchange) to handle POST requests
@@ -224,7 +215,7 @@ public class Tutorial_Week05_EX01 {
             sendResponse(exchange, 400, "Invalid JSON format: " + e.getMessage()); // 400 Bad Request
         }
     }
-
+    
     /*
      * Please create a helper method sendResponse(exchange, statusCode, response)
      * to send HTTP responses. Set the Content-Type header to "application/json"

@@ -48,7 +48,8 @@ public class Tutorial_Week05_EX01 {
          * Please create an HTTP server that listens on port 8080.
          * Use HttpServer.create() with an InetSocketAddress and a backlog of 0.
          */
-        
+        // creating HTTP server on port 8080
+        HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
         
         
         
@@ -65,7 +66,9 @@ public class Tutorial_Week05_EX01 {
          * requests for a specific movie by ID. The trailing slash is
          * important to distinguish between the two endpoints.
          */
-        
+        // setting up context paths
+        server.createContext("/movies", new MoviesHandler());
+        server.createContext("/movies/", new MoviesHandler());
         
         
         
@@ -74,14 +77,17 @@ public class Tutorial_Week05_EX01 {
          * Please set the server's executor to null to use the default executor.
          * For larger applications, consider using a thread pool.
          */
-        
+        // using default executor
+        server.setExecutor(null);
         
         
 
         /*
          * Please start the server and print "server started on port 8080"
          */
-        
+        // starting server
+        System.out.println("server started on port 8080");
+        server.start();
         
         
         
@@ -93,13 +99,16 @@ public class Tutorial_Week05_EX01 {
      * and add it to the list.
      */
     
+    // method to add movies
+    private static void addMovie(int id, String title, String genre) {
+        Map<String, Object> movie = new HashMap<>();
+        movie.put("id", id);
+        movie.put("title", title);
+        movie.put("genre", genre);
+        movies.add(movie);
+    }
     
     
-    
-    
-    
-    
-
     /*
      * Please create a class MoviesHandler that implements HttpHandler.
      * This class handles requests to the /movies endpoint.
@@ -112,11 +121,17 @@ public class Tutorial_Week05_EX01 {
          * - If POST, call handlePostMovie(exchange).
          * - Otherwise, send a 405 Method Not Allowed response.
          */
-        
-        
-        
-        
-        
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            String requestMethod = exchange.getRequestMethod();
+            if ("GET".equalsIgnoreCase(requestMethod)) {
+                handleGetMovies(exchange);
+            } else if ("POST".equalsIgnoreCase(requestMethod)) {
+                handlePostMovie(exchange);
+            } else {
+                sendResponse(exchange, 405, "Method Not Allowed");
+            }
+        } 
     }
 
     /*
@@ -129,13 +144,14 @@ public class Tutorial_Week05_EX01 {
          * If the request method is GET, call handleGetMovieById(exchange).
          * Otherwise, send a 405 Method Not Allowed response.
          */
-        
-        
-        
-        
-        
-        
-        
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+                handleGetMovieById(exchange);
+            } else {
+                sendResponse(exchange, 405, "Method Not Allowed");
+            }
+        }
     }
 
     /*
@@ -205,10 +221,12 @@ public class Tutorial_Week05_EX01 {
      * to send HTTP responses. Set the Content-Type header to "application/json"
      * and send the given status code and response body.
      */
-    
-    
-    
-    
-    
-    
+    private static void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
+        exchange.getResponseHeaders().set("Content-Type", "application/json");
+        exchange.sendResponseHeaders(statusCode, response.length());
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(response.getBytes());
+        }
+    }
+  
 }

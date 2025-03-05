@@ -8,6 +8,7 @@ This repository contains tutorial exercises and solutions for the **Client-Serve
 - **Week2_CSA_TUT** - Multi-threaded server implementation handling multiple clients.
 - **Week3_CSA_TUT_Q1** - TCP socket programming with message exchange between client and server.
 - **Week3(4)_CSA_TUT_Q2** - Enhancements to the client-server communication mechanism.
+- **Week5_CSA_TUT_Q1** - Development of a simple RESTful API using Java's built-in HttpServer, handling GET and POST requests with JSON data.
 
 ## Features
 - Implementation of **TCP sockets** in Java.

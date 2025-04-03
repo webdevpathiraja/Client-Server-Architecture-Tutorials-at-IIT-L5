@@ -10,10 +10,18 @@ package com.example.lab.based.practical.mock.solutions;
  * Please import libraries
  * ----------------
 */
-
-
-
-
+import.java.io.BufferedReader;
+import.java.io.PrintWriter;
+import.java.io.InputStreamReader;
+import.java.io.IOException;
+import.java.net.Socket;
+import.java.net.SocketException;
+import.java.net.ServerSocket;
+import.java.net.SocketTimeoutException;
+import.java.nio.channels.IllegalBlockingModeException;
+import.java.util.logging.Logger;
+import.java.util.logging.Level;
+        
 /*
  * ----------------
  * Please define a class named 'ClientServer' that will contain both the server and client logic.

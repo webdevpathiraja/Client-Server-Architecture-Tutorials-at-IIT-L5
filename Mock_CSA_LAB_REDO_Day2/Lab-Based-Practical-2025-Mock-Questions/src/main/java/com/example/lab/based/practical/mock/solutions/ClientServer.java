@@ -10,131 +10,97 @@ package com.example.lab.based.practical.mock.solutions;
  * Please import libraries
  * ----------------
 */
-import.java.io.BufferedReader;
-import.java.io.PrintWriter;
-import.java.io.InputStreamReader;
-import.java.io.IOException;
-import.java.net.Socket;
-import.java.net.SocketException;
-import.java.net.ServerSocket;
-import.java.net.SocketTimeoutException;
-import.java.nio.channels.IllegalBlockingModeException;
-import.java.util.logging.Logger;
-import.java.util.logging.Level;
-        
+/*
+ * ----------------
+ * Please import libraries
+ * ----------------
+ */
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.ServerSocket;
+import java.net.SocketTimeoutException;
+import java.nio.channels.IllegalBlockingModeException;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 /*
  * ----------------
  * Please define a class named 'ClientServer' that will contain both the server and client logic.
  * This demonstrates a simple client-server interaction within a single class.
  * ----------------
-*/
+ */
+public class ClientServer {
 
+    // Fix: Corrected Logger name (LOgger -> Logger)
+    private static final Logger logger = Logger.getLogger(ClientServer.class.getName());
 
-    
-    /*
-     * ----------------
-     * Please create a logger and call it as logger
-     * ----------------
-    */
+    // Server Port Number
+    private static final int PORT = 12345;
 
+    // Main method
+    public static void main(String[] args) {
 
+        logger.info("[MAIN] Server and Client Threads starting");
 
+        // Start Server Thread
+        Thread serverThread = new Thread(new Server());
+        serverThread.start();
+        logger.info("[MAIN] Server Thread started");
 
-    /*
-     * ----------------
-     * Please define a constant for the port number the server will listen on.
-     * Using a constant makes it easy to change the port in one place.
-     * ----------------
-    */
-
-
-
-    /*
-     * ----------------
-     * Please define the main method, the entry point of the application.
-     * This method creates and starts the server and client threads.
-     * ----------------
-    */
-    
-
-
-        /*
-         * ----------------
-         * Please create a new thread for the server and start it.
-         * The ServerSocket logic is encapsulated within the Server class.
-         * ----------------
-        */
-      
-
-
-        /*
-         * ----------------
-         * Please create a new thread for the client and start it.
-         * The client logic is encapsulated within the Client class.
-         * ----------------
-        */
-        
-
+        // Start Client Thread
+        Thread clientThread = new Thread(new Client());
+        clientThread.start();
+        logger.info("[MAIN] Client Thread started");
+    }
 
     /*
      * ----------------
      * Please define a nested class named 'Server' that implements the Runnable interface.
      * This class encapsulates the server's functionality and allows it to run in a separate thread.
      * ----------------
-    */
-    
+     */
+    static class Server implements Runnable {
 
-        /*
-         * ----------------
-         * Please override the run method from the Runnable interface.
-         * This method contains the main logic for the server.
-         * ----------------
-        */
+        @Override
+        public void run() {
+            logger.info("[SERVER] Starting server...");
+
+            try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+                logger.info("[SERVER] Server started on port " + PORT);
+
+                while (true) {
+                    logger.info("[SERVER] Waiting for a client connection...");
+                    Socket clientSocket = serverSocket.accept();
+                    logger.info("[SERVER] Client connected: " + clientSocket);
+
+                    // Start a new thread for each client
+                    Thread clientHandler = new Thread(new ClientHandler(clientSocket));
+                    clientHandler.start();
+                    logger.info("[SERVER] ClientHandler thread started for " + clientSocket);
+                }
+
+            } catch (SocketException e) {
+                logger.log(Level.SEVERE, "[SERVER] SocketException occurred!", e);
+            } catch (SocketTimeoutException e) {
+                logger.log(Level.SEVERE, "[SERVER] SocketTimeoutException occurred!", e);
+            } catch (IllegalBlockingModeException e) {
+                logger.log(Level.SEVERE, "[SERVER] IllegalBlockingModeException occurred!", e);
+            } catch (SecurityException e) {
+                logger.log(Level.SEVERE, "[SERVER] SecurityException occurred!", e);
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, "[SERVER] IOException occurred!", e);
+            }
+        }
+    }
+}
+
         
-
-            /*
-             * ----------------
-             * Please create a ServerSocket to listen for incoming client connections.
-             * Use try-with-resources to ensure the ServerSocket is closed properly.
-             * Inside the try block please please use informational logger to log "Server started on port 12345"
-             * Handle potential IOExceptions during ServerSocket creation.
-             * ----------------
-            */
-            
-
-                /*
-                 * ----------------
-                 * Please loop indefinitely, listening for and accepting client connections.
-                 * ----------------
-                */
-                
-
-                    /*
-                     * ----------------
-                     * Please accept an incoming client connection uaing serverSocket object and store it inside an object of the Socket class called clientSocket. 
-                     * Please print "Client connected" plus the clientSocket object
-                     * ----------------
-                    */
-                    
-
-
-
-                    /*
-                     * ----------------
-                     * Please create a new ClientHandler thread to handle communication with the newly connected client.
-                     * Pass the client's socket to the ClientHandler. Start the handler thread.
-                     * ----------------
-                    */
-                   
-
-
-        /*
-         * ----------------
-         * Please define a nested class named 'ClientHandler' that implements the Runnable interface.
-         * This class handles the interaction with a single connected client.
-         * ----------------
-        */
-       
+        
+        
 
 
 
@@ -351,4 +317,5 @@ import.java.util.logging.Level;
                     */
                     
 
-                
+             
+}

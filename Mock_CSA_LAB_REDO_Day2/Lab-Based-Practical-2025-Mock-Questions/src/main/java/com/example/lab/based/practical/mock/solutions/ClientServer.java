@@ -39,7 +39,7 @@ public class ClientServer {
     private static final Logger logger = Logger.getLogger(ClientServer.class.getName());
 
     // Server Port Number
-    private static final int PORT = 1235;
+    private static final Integer PORT = 1235;
 
     // Main method
     public static void main(String[] args) {

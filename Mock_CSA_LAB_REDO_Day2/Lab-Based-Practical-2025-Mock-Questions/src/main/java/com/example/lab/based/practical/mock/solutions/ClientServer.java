@@ -57,12 +57,8 @@ public class ClientServer {
         logger.info("[MAIN] Client Thread started");
     }
 
-    /*
-     * ----------------
-     * Please define a nested class named 'Server' that implements the Runnable interface.
-     * This class encapsulates the server's functionality and allows it to run in a separate thread.
-     * ----------------
-     */
+    
+    
     static class Server implements Runnable {
 
         @Override
@@ -95,7 +91,67 @@ public class ClientServer {
                 logger.log(Level.SEVERE, "[SERVER] IOException occurred!", e);
             }
         }
+        
+        static class ClientHandler implements Runnable {
+            private final Socket clientSocket;
+            
+            public ClientHandler(Socket clientSocket) {
+                this.clientSocket = clientSocket;
+            }
+            
+            @Override 
+            public void run() {
+                logger.info("[CLENT-HANDLER] starting handling client " + clientSocket);
+                
+                try(BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                       PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
+                    
+                    logger.info("[CLIENT-HANDLER] Established input and output streams for " + clientSocket);
+                    
+                    String inputLine;
+                    
+                    while((inputLine = in.readLine()) != null) {
+                        logger.info("[CLIENT-HANDLER] Recived message from client: " + inputLine);
+                        System.out.println("[SERVER] server recieved: " + inputLine);
+                        
+                        
+                        if ("exit".equalsIgnoreCase(inputLine)){
+                            logger.info("[CLIENT-HANDLER] Client request exit. Closing for: " + clientSocket);
+                            out.println("Bye");
+                            break;        
+                        }
+                        
+                        out.println("Echo: " + inputLine);
+                        logger.info("[CLIENT-HANDLER] sent echo response to the client: " + clientSocket);             
+                    }
+                    
+                
+                
+                } catch (IOException e) {
+                    logger.severe("[CLIENT-HANDLER] Error handling client: " + clientSocket + " |Error: " + e.getMessage());
+                    
+                } finally {
+                    try {
+                        clientSocket.close();
+                        logger.info("[CLIENT-HANDLER] Connection closed for client: " + clientSocket);
+                        
+                    } catch (IOException e) {
+                        logger.severe("[CLIENT-HANDLER] Erorr closing client connection: " + clientSocket);
+                    }
+                }
+                
+                logger.info("[CLIENT-HANDLER] stopped handling client: " + clientSocket);
+            }
     }
+    
+    
+    
+        
+        
+    
+    
+    
+    
 }
 
         
@@ -104,103 +160,7 @@ public class ClientServer {
 
 
 
-            /*
-             * ----------------
-             * Please define a constructor for the ClientHandler class.
-             * This constructor takes the client's socket as a parameter.
-             * ----------------
-            */
-           
-
-
-
-            /*
-             * ----------------
-             * Please override the run method of the Runnable interface.
-             * This method contains the logic for communicating with the client.
-             * ----------------
-            */
             
-
-
-
-                /*
-                 * ----------------
-                 * Use try-with-resources to ensure resources are closed automatically.
-                 * Handle potential IOExceptions.
-                 * ----------------
-                */
-                
-
-
-                        /*
-                         * ----------------
-                         * Please create a BufferedReader to read text data from the client socket's input stream.
-                         * BufferedReader buffers the input for efficient reading of characters, lines, and arrays.
-                         * Wrap the getInputStream() (which provides raw byte stream) with an InputStreamReader
-                         * to convert the byte stream into a character stream.
-                         * ----------------
-                        */
-                        
-
-
-                        /*
-                         * ----------------
-                         * Please create a PrintWriter to send formatted text data to the client socket's output stream.
-                         * PrintWriter provides convenient methods for writing various data types (strings, numbers, etc.) as text.
-                         * The 'true' argument enables auto-flushing, ensuring that data is sent immediately after each print/println call,
-                         * preventing buffering-related delays.  Wrap getOutputStream() (which provides raw byte stream).
-                         * ----------------
-                        */
-                       
-
-
-                    /*
-                     * ----------------
-                     * Please read messages from the client in a loop and store it inside a string varibale called inputLine.
-                     * Continue reading until the client sends "exit" or the connection is closed.
-                     * print the inputLine plus a message like "Server received: "
-                     * ----------------
-                    */
-                    
-
-
-                        /*
-                         * --------------
-                         * Please check if the client has sent the "exit" command.
-                         * --------------
-                        */
-                        
-
-
-                            /*
-                             * --------------
-                             * If "exit" is received, send a "Bye" message to the client and break out of the loop.
-                             * The println() method of PrintWriter writes a string followed by a newline character to the output stream.
-                             * Then break the operation
-                             * otherwise
-                             * --------------
-                            */
-                            
-
-
-
-                            /*
-                             * --------------
-                             * send the inputLine plus "Echo: "
-                             *  
-                             * --------------
-                            */
-                           
-
-
-
-                
-                /*
-                 * --------------
-                 * create a try block and close the clientSocket and catch io exception                
-                 * --------------
-                */
                 
                 
 

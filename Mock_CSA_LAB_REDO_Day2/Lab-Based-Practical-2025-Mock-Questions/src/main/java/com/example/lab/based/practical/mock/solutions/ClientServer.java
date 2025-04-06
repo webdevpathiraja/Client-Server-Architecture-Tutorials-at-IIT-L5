@@ -157,74 +157,123 @@ public class ClientServer {
     }
 
 
+        
+        /*
+     * ----------------
+     * Please define a nested class named 'Client' that implements the Runnable interface.
+     * This class encapsulates the client's functionality and allows it to run in a separate thread.
+     * ----------------
+    */
     static class Client implements Runnable {
 
-        private static final Logger logger = Logger.getLogger(Client.class.getName());
-        private static final Integer PORT = 12345;
-
+        /*
+         * ----------------
+         * Please override the run method from the Runnable interface.
+         * This method contains the main logic for the client.
+         * ----------------
+        */
         @Override
         public void run() {
+            /*
+             * ----------------
+             * Use try-with-resources to ensure resources are closed automatically.
+             * ----------------
+            */
+            try (
+                /*
+                 * --------------------
+                 * Please create a Socket object, establishing a connection to the server at the specified host 
+                 * ("localhost") and port (PORT).
+                 * This initiates the connection to the server's ServerSocket.
+                 * --------------------
+                */
+                Socket socket = new Socket("localhost", PORT);
 
-            try {
-                logger.info("[CLIENT] Starting client... preparing to connect.");
+                /*
+                 * ----------------
+                 * Please create a PrintWriter to send formatted text data to the server through the socket's output stream.
+                 * PrintWriter simplifies sending text-based data.
+                 * 'true' for auto-flush: ensures data is sent immediately without buffering delays.
+                 * Wrap socket.getOutputStream() to provide character-based output.
+                 * ----------------
+                */
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-                try (
+                /*
+                 * ----------------
+                 * Please Create a BufferedReader to read text data from the server's responses through the socket's input stream.
+                 * BufferedReader provides efficient reading of characters, lines, and arrays by buffering the input.
+                 * Wrap socket.getInputStream() with InputStreamReader to convert bytes to characters.
+                 * ----------------
+                */
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-                    Socket socket = new Socket("localhost", PORT);
+                /*
+                 * -------------------
+                 * Please create a BufferedReader to read text input from the console (System.in).
+                 * This allows the client to read user input.
+                 * Wrap System.in (which is an InputStream) with an InputStreamReader to handle character encoding.
+                 * -------------------
+                */
+                BufferedReader userInputReader = new BufferedReader(new InputStreamReader(System.in))
+            ) {
+                logger.info("[CLIENT] Connected to server at port " + PORT);
 
+                /*
+                 * ----------------
+                 * Please read input from the console  in a loop.
+                 * ----------------
+                */
+                String userInput;
+                while ((userInput = userInputReader.readLine()) != null) {
 
-                    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                    /*
+                     * ----------------
+                     * Please send the user's input to the server using the PrintWriter.
+                     * ----------------
+                    */
+                    out.println(userInput);
+                    logger.info("[CLIENT] Sent message to server: " + userInput);
 
-
-                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-
-                    BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in))
-                ) {
-                    logger.info("[CLIENT] Successfully connected to server at localhost:" + PORT);
-                    System.out.println("[CLIENT] Connected to server at localhost:" + PORT);
-
-
-                    String userInput;
-                    while (true) {
-                        logger.info("[CLIENT] Waiting for user input...");
-                        userInput = consoleInput.readLine();
-                        logger.info("[CLIENT] User entered: " + userInput);
-
-
-                        logger.info("[CLIENT] Sending message to server...");
-                        out.println(userInput);
-                        logger.info("[CLIENT] Message sent to server: " + userInput);
-
-
-                        logger.info("[CLIENT] Waiting for server response...");
-                        String receivedMessage = in.readLine();
-                        if (receivedMessage == null) {
-                            logger.warning("[CLIENT] Server closed the connection.");
-                            System.out.println("[CLIENT] Server closed the connection.");
-                            break;
-                        }
-                        logger.info("[CLIENT] Received from server: " + receivedMessage);
-
-
-                        System.out.println("[CLIENT] Server says: " + receivedMessage);
-
-
-                        if ("exit".equalsIgnoreCase(userInput)) {
-                            logger.info("[CLIENT] Exit command received. Terminating connection...");
-                            break;
-                        }
+                    /*
+                     * ----------------
+                     * Please read the server's response using the BufferedReader and store it inside a string variable called receivedMessage .
+                     * check if the receivedMessage is null
+                     * Then print "Server closed the connection."
+                     * exit the loop
+                     * ----------------
+                    */
+                    String receivedMessage = in.readLine();
+                    if (receivedMessage == null) {
+                        System.out.println("Server closed the connection.");
+                        logger.warning("[CLIENT] Server closed the connection unexpectedly.");
+                        break;
                     }
 
-                } catch (IOException e) {
-                    logger.log(Level.SEVERE, "[CLIENT] Communication error: ", e);
+                    /*
+                     * ---------------
+                     * Print Server Response 
+                     * ---------------
+                    */
+                    System.out.println("Server: " + receivedMessage);
+                    logger.info("[CLIENT] Received message from server: " + receivedMessage);
+
+                    /*
+                     * ----------------
+                     * Please check if the user typed "exit". If so, exit the loop.
+                     * ----------------
+                    */
+                    if ("exit".equalsIgnoreCase(userInput)) {
+                        logger.info("[CLIENT] Exit command issued. Closing connection.");
+                        break;
+                    }
                 }
 
-                logger.info("[CLIENT] Client shutting down.");
-
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "[CLIENT] Unexpected error", e);
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, "[CLIENT] IOException occurred: ", e);
             }
         }
     }
+
+
 }

@@ -144,61 +144,29 @@ public static class ClientServer {
                 try {
                     clientSocket.close();
                     logger.info("[CLIENT-HANDLER] Client socket closed successfully!!...");
-                } catch (IOException e)
-                    logger.log(Level.SEVERE, "IOExp");
+                } catch (IOException e) {
+                    logger.log(Level.SEVERE, "IOExpection occured while closing the socket...", e);
                     
                 }
             }
         }
     }
-                          
-
-
-
-                
-                /*
-                 * --------------
-                 * create a try block and close the clientSocket and catch io exception                
-                 * --------------
-                */
                 
                 
 
-
-
-    /*
-     * ----------------
-     * Please define a nested class named 'Client' that implements the Runnable interface.
-     * This class encapsulates the client's functionality and allows it to run in a separate thread.
-     * ----------------
-    */
+    static class Client implements Runnable {
+        @Override
+        public void run() {
+            
+            try(
+                    Socket socket = new Socket("localhost", PORT);
+                    
+                    PrintWriter out = new Prin
+                    
+                    )
+        }
+    }
     
-
-
-        /*
-         * ----------------
-         * Please override the run method from the Runnable interface.
-         * This method contains the main logic for the client.
-         * ----------------
-        */
-        
-
-
-
-            /*
-             * ----------------
-             * Use try-with-resources to ensure resources are closed automatically.
-             * ----------------
-            */
-          
-
-                    /*
-                     * --------------------
-                     * Please create a Socket object, establishing a connection to the server at the specified host 
-                       ("localhost") and port (PORT).
-                     * This initiates the connection to the server's ServerSocket.
-                     * --------------------
-                    */
                     
 
 

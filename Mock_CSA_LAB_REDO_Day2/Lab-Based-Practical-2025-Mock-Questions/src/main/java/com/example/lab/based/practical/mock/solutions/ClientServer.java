@@ -23,8 +23,6 @@ import java.util.logging.Level;
  * ----------------
  */
 public class ClientServer {
-
-    // Fix: Corrected Logger name (LOgger -> Logger)
     private static final Logger logger = Logger.getLogger(ClientServer.class.getName());
 
     // Server Port Number

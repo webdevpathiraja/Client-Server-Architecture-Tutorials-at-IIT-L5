@@ -4,17 +4,6 @@
  */
 package com.example.lab.based.practical.mock.solutions;
 
-
-/*
- * ----------------
- * Please import libraries
- * ----------------
-*/
-/*
- * ----------------
- * Please import libraries
- * ----------------
- */
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.InputStreamReader;
@@ -211,3 +200,4 @@ public class ClientServer {
 
 
 }
+

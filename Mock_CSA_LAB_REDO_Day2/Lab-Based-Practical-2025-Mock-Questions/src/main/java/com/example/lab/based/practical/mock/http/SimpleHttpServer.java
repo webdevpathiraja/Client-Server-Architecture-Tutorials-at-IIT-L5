@@ -10,9 +10,16 @@ package com.example.lab.based.practical.mock.http;
  * ----------------
 */
 
-
-
-
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /*
  * ----------------
@@ -20,9 +27,9 @@ package com.example.lab.based.practical.mock.http;
  * ----------------
 */
 
-
-
-
+public class SimpleHttpServer {
+    // Add logger for the class
+    private static final Logger LOGGER = Logger.getLogger(SimpleHttpServer.class.getName());
 
     /*
      * ----------------
@@ -31,8 +38,8 @@ package com.example.lab.based.practical.mock.http;
      * ----------------
     */
     
-
-
+    public static void main(String[] args) {
+        LOGGER.info("Starting SimpleHttpServer initialization");
 
         /*
          * ----------------
@@ -41,8 +48,9 @@ package com.example.lab.based.practical.mock.http;
          * ----------------
         */
        
-
-
+        try {
+            LOGGER.info("Creating HTTP server instance");
+            HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
             /*
              * ----------------
@@ -50,8 +58,8 @@ package com.example.lab.based.practical.mock.http;
              * ----------------
             */
             
-
-
+            server.createContext("/myendpoint", new MyHandler());
+            LOGGER.info("Context for '/myendpoint' created and associated with MyHandler");
 
             /*
              * ----------------
@@ -59,8 +67,8 @@ package com.example.lab.based.practical.mock.http;
              * ----------------
             */
             
-
-
+            server.setExecutor(null);
+            LOGGER.info("Server executor set to null (using direct handoff)");
 
             /*
              * ----------------
@@ -69,9 +77,25 @@ package com.example.lab.based.practical.mock.http;
              * ----------------
             */
             
-
-
-
+            server.start();
+            System.out.println("Server started on port 8080");
+            LOGGER.info("Server successfully started on port 8080");
+            
+            LOGGER.info("Server is running. Press Enter to stop the server.");
+            System.in.read(); // Keep server running until Enter is pressed
+            
+            // Manually stop the server when done
+            LOGGER.info("Stopping the server");
+            server.stop(0);
+            LOGGER.info("Server has been stopped");
+            
+        } catch (IOException e) {
+            System.out.println("Exception happened: " + e);
+            LOGGER.log(Level.SEVERE, "Server initialization failed", e);
+        }
+        
+        LOGGER.info("Server application has terminated");
+    }
 
     /*
      * ----------------
@@ -80,7 +104,8 @@ package com.example.lab.based.practical.mock.http;
      * ----------------
     */
     
-
+    static class MyHandler implements HttpHandler {
+        private static final Logger LOGGER = Logger.getLogger(MyHandler.class.getName());
 
         /*
          * -----------------------
@@ -88,8 +113,9 @@ package com.example.lab.based.practical.mock.http;
          * -----------------------
         */
         
-
-
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            LOGGER.info("Request received: " + exchange.getRequestMethod() + " " + exchange.getRequestURI());
 
             /*
              * ----------------
@@ -98,9 +124,9 @@ package com.example.lab.based.practical.mock.http;
              * ----------------
             */
             
-
-
-
+            String method = exchange.getRequestMethod();
+            String path = exchange.getRequestURI().getPath();
+            LOGGER.info("Processing request: Method=" + method + ", Path=" + path);
 
             /*
              * ----------------
@@ -110,9 +136,11 @@ package com.example.lab.based.practical.mock.http;
              * ----------------
             */
            
-
-
-
+            if (!path.equals("/myendpoint")) {
+                LOGGER.warning("Invalid path requested: " + path);
+                sendResponse(exchange, "Not Found", 404);
+                return;
+            }
 
             /*
              * ---------------
@@ -120,7 +148,10 @@ package com.example.lab.based.practical.mock.http;
              * ---------------
             */
            
-
+            if (method.equalsIgnoreCase("GET")) {
+                LOGGER.info("Processing GET request");
+                handleGetRequest(exchange);
+            }
 
             /*
             * ------------------
@@ -128,8 +159,8 @@ package com.example.lab.based.practical.mock.http;
             * ------------------
             */
            
-
-
+            else if (method.equalsIgnoreCase("POST")) {
+                LOGGER.info("Processing POST request");
 
                 /*
                  * ------------------
@@ -138,8 +169,9 @@ package com.example.lab.based.practical.mock.http;
                  * ------------------
                 */
                 
-
-
+                String response = "This is a POST request to /myendpoint. Request body is ignored.";
+                sendResponse(exchange, response, 200);
+            }
 
             /*
             * ----------------------
@@ -147,8 +179,11 @@ package com.example.lab.based.practical.mock.http;
             * ----------------------
             */
             
-
-
+            else {
+                LOGGER.warning("Unsupported method requested: " + method);
+                sendResponse(exchange, "Method Not Allowed", 405);
+            }
+        }
 
         /*
          * -------------------------
@@ -157,7 +192,8 @@ package com.example.lab.based.practical.mock.http;
          * -------------------------
         */
         
-
+        private void handleGetRequest(HttpExchange exchange) throws IOException {
+            LOGGER.info("Handling GET request");
 
             /*
              * -------------
@@ -165,7 +201,7 @@ package com.example.lab.based.practical.mock.http;
              * -------------
             */
             
-
+            String response = "This is a GET request to /myendpoint";
 
             /*
              * -------------------
@@ -173,7 +209,9 @@ package com.example.lab.based.practical.mock.http;
              * -------------------
             */
             
-
+            LOGGER.info("Sending response for GET request");
+            sendResponse(exchange, response, 200);
+        }
 
         /*
          * -------------------------
@@ -182,7 +220,8 @@ package com.example.lab.based.practical.mock.http;
          * -------------------------
         */
        
-
+        private void sendResponse(HttpExchange exchange, String response, int statusCode) throws IOException {
+            LOGGER.info("Preparing response with status code: " + statusCode);
 
             /*
              * -------------
@@ -190,7 +229,8 @@ package com.example.lab.based.practical.mock.http;
              * -------------
             */
             
-
+            exchange.getResponseHeaders().set("Content-Type", "text/plain");
+            LOGGER.info("Content-Type header set to text/plain");
 
              /*
              * ------------------
@@ -199,7 +239,8 @@ package com.example.lab.based.practical.mock.http;
              * ------------------
             */
             
-
+            exchange.sendResponseHeaders(statusCode, response.getBytes(StandardCharsets.UTF_8).length);
+            LOGGER.info("Response headers sent with status code: " + statusCode);
 
             /*
              * --------------------
@@ -208,5 +249,15 @@ package com.example.lab.based.practical.mock.http;
              * Send the response using os object and pass reponse as its argument by converting it to bytes.
              * --------------------
             */
-     
-
+            
+            try (OutputStream os = exchange.getResponseBody()) {
+                LOGGER.info("Writing response body");
+                os.write(response.getBytes(StandardCharsets.UTF_8));
+                LOGGER.info("Response successfully sent");
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "Error writing response body", e);
+                throw e;
+            }
+        }
+    }
+}

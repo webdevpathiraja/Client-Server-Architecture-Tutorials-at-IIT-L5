@@ -39,7 +39,7 @@ public class ClientServer {
     private static final Logger logger = Logger.getLogger(ClientServer.class.getName());
 
     // Server Port Number
-    private static final Integer PORT = 1235;
+    private static final Integer PORT = 12345;
 
     // Main method
     public static void main(String[] args) {
@@ -92,62 +92,75 @@ public class ClientServer {
             }
         }
     }
+    
+    
+    
+    
         
     static class ClientHandler implements Runnable {
         private final Socket clientSocket;
 
         public ClientHandler(Socket clientSocket) {
+            logger.info("[CLIENT-HANDLER] Initializing handler for new client socket: " + clientSocket);
             this.clientSocket = clientSocket;
         }
 
         @Override 
         public void run() {
-            logger.info("[CLIENT-HANDLER] starting handling client " + clientSocket);
+            logger.info("[CLIENT-HANDLER] Started handling client: " + clientSocket);
 
-            try(BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                   PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
-
-                logger.info("[CLIENT-HANDLER] Established input and output streams for " + clientSocket);
+            // Establish communication channels
+            try (
+                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)
+            ) {
+                logger.info("[CLIENT-HANDLER] Input and output streams established successfully for: " + clientSocket);
 
                 String inputLine;
 
-                while((inputLine = in.readLine()) != null) {
-                    logger.info("[CLIENT-HANDLER] Recived message from client: " + inputLine);
-                    System.out.println("[SERVER] server recieved: " + inputLine);
+                // Start message-processing loop
+                while ((inputLine = in.readLine()) != null) {
+                    logger.info("[CLIENT-HANDLER] Received message from client: " + inputLine);
+                    System.out.println("[SERVER] server received: " + inputLine);
 
-
-                    if ("exit".equalsIgnoreCase(inputLine)){
-                        logger.info("[CLIENT-HANDLER] Client request exit. Closing for: " + clientSocket);
+                    // Check for exit condition
+                    if ("exit".equalsIgnoreCase(inputLine)) {
+                        logger.info("[CLIENT-HANDLER] Exit command received from client: " + clientSocket);
                         out.println("Bye");
-                        break;        
+                        logger.info("[CLIENT-HANDLER] Sent 'Bye' response to client: " + clientSocket);
+                        break;
                     }
 
+                    // Echo message back
+                    logger.info("[CLIENT-HANDLER] Preparing echo response for: " + inputLine);
                     out.println("Echo: " + inputLine);
-                    logger.info("[CLIENT-HANDLER] sent echo response to the client: " + clientSocket);             
+                    logger.info("[CLIENT-HANDLER] Sent echo response to client: " + clientSocket);
                 }
 
-
+                logger.info("[CLIENT-HANDLER] Client message loop has ended for: " + clientSocket);
 
             } catch (IOException e) {
-                logger.severe("[CLIENT-HANDLER] Error handling client: " + clientSocket + " |Error: " + e.getMessage());
+                logger.severe("[CLIENT-HANDLER] IOException occurred while handling client: " + clientSocket + " | Error: " + e.getMessage());
 
             } finally {
+                logger.info("[CLIENT-HANDLER] Attempting to close client socket: " + clientSocket);
                 try {
                     clientSocket.close();
-                    logger.info("[CLIENT-HANDLER] Connection closed for client: " + clientSocket);
-
+                    logger.info("[CLIENT-HANDLER] Client socket successfully closed: " + clientSocket);
                 } catch (IOException e) {
-                    logger.severe("[CLIENT-HANDLER] Erorr closing client connection: " + clientSocket);
+                    logger.severe("[CLIENT-HANDLER] Error while closing client socket: " + clientSocket + " | Error: " + e.getMessage());
                 }
             }
 
-            logger.info("[CLIENT-HANDLER] stopped handling client: " + clientSocket);
+            logger.info("[CLIENT-HANDLER] Finished handling client: " + clientSocket);
         }
     }
+
 
     static class Client implements Runnable {
 
         private static final Logger logger = Logger.getLogger(Client.class.getName());
+        private static final Integer PORT = 12345;
 
         @Override
         public void run() {

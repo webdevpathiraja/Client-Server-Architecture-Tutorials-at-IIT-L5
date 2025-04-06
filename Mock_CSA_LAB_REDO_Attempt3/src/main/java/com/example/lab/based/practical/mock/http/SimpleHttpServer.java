@@ -9,37 +9,56 @@ package com.example.lab.based.practical.mock.http;
  * Please import necessary libraries
  * ----------------
 */
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpExchange;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 
-
-
-
-/*
- * ----------------
- * Please define a class named 'SimpleHttpServer' to encapsulate the HTTP server functionality.
- * ----------------
-*/
-
-
-
-
-
-    /*
-     * ----------------
-     * Please define the main method, the entry point of the application.
-     * This method sets up and starts the HTTP server.
-     * ----------------
-    */
+public class SimpleHttpServer {
     
+    private static final Logger logger = Logger.getLogger(SimpleHttpServer.class.getName());
+    
+    public static void main(String[] args) {
+        
+        logger.info("[MAIN] Starting SimpleHttpServer initialization...");
+        
+        try {
+            HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+            logger.info("[MAIN] Server created on port 8080");
+            
+            server.createContext("/myendpoint", new MyHandler());
+            logger.info("[MAIN] Created server context /myendpoint and associated with MyHandler");
+            
+            server.setExecutor(null);
+            logger.info("[MAIN] Set server execute to null");
+            
+            server.start();
+            logger.info("[MAIN] Server started and running on port 8080...");
+            logger.info("[MAIN] Press enter to close the server manually");
+            
+            System.in.read();
+            
+            logger.info("[MAIN] Requested to close the server");
+            logger.info("[MAIN] Closing server...");
+            server.stop(0);
+            logger.info("[MAIN] Server closed!!");
+            
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "IOException occured!", e);
+            System.out.println("IOException occured, Server initialization failed: " + e);
+            
+        }
+    }
+    
+}
 
-
-
-        /*
-         * ----------------
-         * Please create an HttpServer instance called server that listens on port 8080. Set the backlog to 0
-         * Use try-with-resources to ensure the server is closed properly.
-         * ----------------
-        */
        
 
 

@@ -154,18 +154,7 @@ public static class ClientServer {
                 
                 
 
-    static class Client implements Runnable {
-        @Override
-        public void run() {
-            
-            try(
-                    Socket socket = new Socket("localhost", PORT);
-                    
-                    PrintWriter out = new Prin
-                    
-                    )
-        }
-    }
+    
     
                     
 
